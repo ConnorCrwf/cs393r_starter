@@ -1,12 +1,4 @@
-# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
-# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
-cmake_minimum_required(VERSION 2.8.3)
-project(cs393r_starter)
-# Load catkin and all dependencies required for this package
-# TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS std_msgs nav_msgs geometry_msgs visualization_msgs sensor_msgs roscpp rosbag tf ut_automata tf2_ros)
-
-include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+PROJECT(reference_car)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 MESSAGE(STATUS "Compiling Reference Car Localization + Navigation")
@@ -24,10 +16,10 @@ ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g")
 ENDIF()
 
-# INCLUDE($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-# ROSBUILD_INIT()
-# SET(ROS_BUILD_STATIC_LIBS true)
-# SET(ROS_BUILD_SHARED_LIBS false)
+INCLUDE($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+ROSBUILD_INIT()
+SET(ROS_BUILD_STATIC_LIBS true)
+SET(ROS_BUILD_SHARED_LIBS false)
 
 MESSAGE(STATUS "ROS-Overrride Build Type: ${CMAKE_BUILD_TYPE}")
 MESSAGE(STATUS "CXX Flags: ${CMAKE_CXX_FLAGS}")
@@ -35,7 +27,7 @@ MESSAGE(STATUS "CXX Flags: ${CMAKE_CXX_FLAGS}")
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-SET(libs ${catkin_LIBRARIES} glog gflags amrl-shared-lib boost_system lua5.1
+SET(libs roslib roscpp rosbag glog gflags amrl-shared-lib boost_system lua5.1
     pthread)
 
 ADD_LIBRARY(shared_library
@@ -46,38 +38,26 @@ ADD_SUBDIRECTORY(src/shared)
 INCLUDE_DIRECTORIES(src/shared)
 INCLUDE_DIRECTORIES(src)
 
-ADD_EXECUTABLE(slam
+ROSBUILD_ADD_EXECUTABLE(slam
                         src/slam/slam_main.cc
                         src/slam/slam.cc)
 TARGET_LINK_LIBRARIES(slam shared_library ${libs})
 
 
-ADD_EXECUTABLE(particle_filter
+ROSBUILD_ADD_EXECUTABLE(particle_filter
                         src/particle_filter/particle_filter_main.cc
                         src/particle_filter/particle_filter.cc)
 TARGET_LINK_LIBRARIES(particle_filter shared_library ${libs})
 
-ADD_EXECUTABLE(navigation
+ROSBUILD_ADD_EXECUTABLE(navigation
                         src/navigation/navigation_main.cc
                         src/navigation/navigation.cc
                         src/navigation/latency_compensator.cc)
 TARGET_LINK_LIBRARIES(navigation shared_library ${libs})
 
-ADD_EXECUTABLE(measure_latency
+ROSBUILD_ADD_EXECUTABLE(measure_latency
                         src/navigation/measureLatency.cpp)
 TARGET_LINK_LIBRARIES(measure_latency shared_library ${libs})
 
 ADD_EXECUTABLE(eigen_tutorial
-               src/eigen_tutorial.cc)## Generate added messages and services with any dependencies listed here
-#generate_messages(
-#    #TODO DEPENDENCIES geometry_msgs std_msgs
-#)
-
-# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
-# TODO: fill in what other packages will need to use this package
-catkin_package(
-    DEPENDS std_msgs nav_msgs geometry_msgs visualization_msgs sensor_msgs roscpp rosbag tf ut_automata
-    CATKIN_DEPENDS # TODO
-    INCLUDE_DIRS # TODO include
-    LIBRARIES # TODO
-)
+               src/eigen_tutorial.cc)
